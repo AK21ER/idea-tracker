@@ -3,7 +3,6 @@ import { Schema } from 'mongoose';
 import { IUserDocument } from './types';
 
 export const applyUserMethods = (schema: Schema) => {
-  // Hash password before saving, but only if it changed
   schema.pre('save', async function (this: IUserDocument, next: any) {
     if (!this.isModified('password')) return next();
 
@@ -12,7 +11,6 @@ export const applyUserMethods = (schema: Schema) => {
     next();
   });
 
-  // Instance method: compare a plaintext password against the stored hash
   schema.methods.comparePassword = async function (
     this: IUserDocument,
     candidatePassword: string
@@ -20,7 +18,6 @@ export const applyUserMethods = (schema: Schema) => {
     return bcrypt.compare(candidatePassword, this.password);
   };
 
-  // Instance method: return a safe, public-facing version of the user
   schema.methods.toSafeObject = function (this: IUserDocument) {
     return {
       id: this._id,
