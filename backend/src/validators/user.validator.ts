@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import { PASSWORD_STRENGTH_REGEX, PASSWORD_STRENGTH_MESSAGE } from '../utils/constants';
 
 export const registerValidator = [
   body('name')
@@ -14,10 +15,7 @@ export const registerValidator = [
 
   body('password')
     .notEmpty().withMessage('Password is required')
-    .isLength({ min: 8, max: 128 }).withMessage('Password must be between 8 and 128 characters')
-    .matches(/[A-Z]/).withMessage('Password must contain at least one uppercase letter')
-    .matches(/[a-z]/).withMessage('Password must contain at least one lowercase letter')
-    .matches(/[0-9]/).withMessage('Password must contain at least one number'),
+    .matches(PASSWORD_STRENGTH_REGEX).withMessage(PASSWORD_STRENGTH_MESSAGE),
 ];
 
 export const loginValidator = [
