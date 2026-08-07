@@ -1,4 +1,4 @@
-import { Document, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 
 export interface IUser {
   name: string;
@@ -15,6 +15,6 @@ export interface IUserDocument extends IUser, Document {
   toSafeObject(): Partial<IUser> & { id: Types.ObjectId };
 }
 
-export interface IUserModel extends Document {
+export interface IUserModel extends Model<IUserDocument> {
   authenticateUser(email: string, password: string): Promise<IUserDocument>;
 }
