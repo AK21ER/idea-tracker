@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import passport from 'passport';
 import { IUserDocument } from '../models/users/types';
 import { ROLES } from '../utils/constants';
+import { APIError } from '../errors/APIError';
 
 export const authenticateJwt = (
   req: Request,
@@ -13,11 +14,7 @@ export const authenticateJwt = (
     { session: false },
     (err: Error, user: IUserDocument | false) => {
       if (err) return next(err);
-
-      if (!user) {
-        res.status(401).json({ success: false, message: 'Unauthorized: invalid or missing token' });
-        return;
-      }
+      if (!user) return next(new APIError('Unauthorized: invalid or missing token', 401));
 
       req.user = user;
       next();
@@ -33,8 +30,7 @@ export const requireAdmin = (
   const user = req.user as IUserDocument;
 
   if (user.role !== ROLES.ADMIN) {
-    res.status(403).json({ success: false, message: 'Forbidden: admin access required' });
-    return;
+    return next(new APIError('Forbidden: admin access required', 403));
   }
 
   next();

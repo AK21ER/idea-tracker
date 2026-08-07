@@ -6,7 +6,18 @@ export const parseValidationErrors = (
   res: Response,
   next: NextFunction
 ): void => {
-  const errors = validationResult(req);
+  const errors = validationResult(req); /* this might return [
+    {
+        path: "email",
+        msg: "Invalid email",
+        type: "field"
+    },
+    {
+        path: "password",
+        msg: "Too short",
+        type: "field"
+    }
+] */
 
   if (!errors.isEmpty()) {
     res.status(400).json({

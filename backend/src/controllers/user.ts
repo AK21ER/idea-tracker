@@ -3,6 +3,7 @@ import passport from 'passport';
 import { User } from '../models/users';
 import { IUserDocument } from '../models/users/types';
 import { signToken } from '../utils';
+import { APIError } from '../errors/APIError';
 
 export const register = async (
   req: Request,
@@ -14,8 +15,7 @@ export const register = async (
 
     const existing = await User.findOne({ email });
     if (existing) {
-      res.status(409).json({ success: false, message: 'Email already in use' });
-      return;
+      throw new APIError('Email already in use', 409);
     }
 
     const user = await User.create({ name, email, password });
@@ -38,8 +38,7 @@ export const login = (req: Request, res: Response, next: NextFunction): void => 
       if (err) return next(err);
 
       if (!user) {
-        res.status(401).json({ success: false, message: info?.message || 'Invalid credentials' });
-        return;
+        return next(new APIError(info?.message || 'Invalid credentials', 401));
       }
 
       const token = signToken(user);
