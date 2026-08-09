@@ -11,6 +11,7 @@ const envSchema = Joi.object({
   JWT_EXPIRES_IN: Joi.string().default('1d'),
   GOOGLE_CLIENT_ID: Joi.string().allow('').optional(),
   GOOGLE_CLIENT_SECRET: Joi.string().allow('').optional(),
+  GOOGLE_CALLBACK_URL: Joi.string().allow('').optional(),
   FACEBOOK_CLIENT_ID: Joi.string().allow('').optional(),
   FACEBOOK_CLIENT_SECRET: Joi.string().allow('').optional(),
 }).unknown(true); //"only validate the keys I listed; ignore the rest.
@@ -30,6 +31,7 @@ export const config = {
   google: {
     clientId: envVars.GOOGLE_CLIENT_ID as string,
     clientSecret: envVars.GOOGLE_CLIENT_SECRET as string,
+    callbackUrl: envVars.GOOGLE_CALLBACK_URL as string,
   },
   facebook: {
     clientId: envVars.FACEBOOK_CLIENT_ID as string,

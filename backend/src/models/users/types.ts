@@ -3,8 +3,10 @@ import { Document, Model, Types } from 'mongoose';
 export interface IUser {
   name: string;
   email: string;
-  password: string;
+  password?: string;
   role: 'user' | 'admin';
+  provider: 'local' | 'google';
+  googleId?: string;
   createdAt: Date;
   updatedAt: Date;
 }

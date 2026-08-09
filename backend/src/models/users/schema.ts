@@ -1,4 +1,5 @@
 import { Schema } from 'mongoose';
+import { IUserDocument } from './types';
 
 export const userSchema = new Schema(
   {
@@ -18,13 +19,25 @@ export const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: true,
-      select: false, 
+      required: function (this: IUserDocument) {
+        return this.provider === 'local';
+      },
+      select: false,
     },
     role: {
       type: String,
       enum: ['user', 'admin'],
       default: 'user',
+    },
+    provider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
   },
   { timestamps: true }

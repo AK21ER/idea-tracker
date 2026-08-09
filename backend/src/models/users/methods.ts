@@ -3,8 +3,8 @@ import { Schema } from 'mongoose';
 import { IUserDocument } from './types';
 
 export const applyUserMethods = (schema: Schema) => {
-  schema.pre('save', async function (this: IUserDocument) {
-    if (!this.isModified('password')) return;
+  schema.pre<IUserDocument>('save', async function () {
+    if (!this.password || !this.isModified('password')) return;
 
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -14,6 +14,7 @@ export const applyUserMethods = (schema: Schema) => {
     this: IUserDocument,
     candidatePassword: string
   ): Promise<boolean> {
+    if (!this.password) return false; // Google-only users have no password to compare
     return bcrypt.compare(candidatePassword, this.password);
   };
 
@@ -23,6 +24,7 @@ export const applyUserMethods = (schema: Schema) => {
       name: this.name,
       email: this.email,
       role: this.role,
+      provider: this.provider,
       createdAt: this.createdAt,
     };
   };

@@ -54,3 +54,15 @@ export const getAccount = (req: Request, res: Response): void => {
   const user = req.user as IUserDocument;
   res.status(200).json({ success: true, data: { user: user.toSafeObject() } });
 };
+
+export const googleCallback = (req: Request, res: Response): void => {
+  const user = req.user as IUserDocument;
+  const token = signToken(user);
+
+  // Redirect to your frontend with the token, or return JSON directly
+  // depending on how your frontend is built. JSON shown here for Postman testing:
+  res.status(200).json({
+    success: true,
+    data: { user: user.toSafeObject(), token },
+  });
+};
