@@ -14,6 +14,7 @@ const envSchema = Joi.object({
   GOOGLE_CALLBACK_URL: Joi.string().allow('').optional(),
   FACEBOOK_CLIENT_ID: Joi.string().allow('').optional(),
   FACEBOOK_CLIENT_SECRET: Joi.string().allow('').optional(),
+  FACEBOOK_CALLBACK_URL: Joi.string().allow('').optional(),
 }).unknown(true); //"only validate the keys I listed; ignore the rest.
 
 const { error, value: envVars } = envSchema.validate(process.env);
@@ -33,8 +34,9 @@ export const config = {
     clientSecret: envVars.GOOGLE_CLIENT_SECRET as string,
     callbackUrl: envVars.GOOGLE_CALLBACK_URL as string,
   },
-  facebook: {
-    clientId: envVars.FACEBOOK_CLIENT_ID as string,
-    clientSecret: envVars.FACEBOOK_CLIENT_SECRET as string,
-  },
+ facebook: {
+  clientId: envVars.FACEBOOK_CLIENT_ID as string,
+  clientSecret: envVars.FACEBOOK_CLIENT_SECRET as string,
+  callbackUrl: envVars.FACEBOOK_CALLBACK_URL as string,
+},
 };

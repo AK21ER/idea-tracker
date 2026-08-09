@@ -66,3 +66,13 @@ export const googleCallback = (req: Request, res: Response): void => {
     data: { user: user.toSafeObject(), token },
   });
 };
+
+export const oauthCallback = (req: Request, res: Response): void => {
+  const user = req.user as IUserDocument;
+  const token = signToken(user);
+
+  res.status(200).json({
+    success: true,
+    data: { user: user.toSafeObject(), token },
+  });
+};

@@ -39,6 +39,11 @@ export const userSchema = new Schema(
       unique: true,
       sparse: true,
     },
+    facebookId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },  
   },
   { timestamps: true }
 );

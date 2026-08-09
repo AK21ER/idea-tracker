@@ -22,4 +22,15 @@ router.get(
   googleCallback
 );
 
+router.get(
+  '/auth/facebook',
+  passport.authenticate('facebook', { scope: ['email'], session: false })
+);
+
+router.get(
+  '/auth/facebook/callback',
+  passport.authenticate('facebook', { session: false, failureRedirect: '/api/users/auth/facebook/failure' }),
+  googleCallback // reuse the same handler — it's provider-agnostic, just signs a token for req.user
+);
+
 export default router;

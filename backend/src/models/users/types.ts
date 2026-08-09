@@ -5,12 +5,12 @@ export interface IUser {
   email: string;
   password?: string;
   role: 'user' | 'admin';
-  provider: 'local' | 'google';
+  provider: 'local' | 'google' | 'facebook';
   googleId?: string;
+  facebookId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
-
 export interface IUserDocument extends IUser, Document {
   _id: Types.ObjectId;
   comparePassword(candidatePassword: string): Promise<boolean>;
