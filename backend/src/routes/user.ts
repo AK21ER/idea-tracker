@@ -1,9 +1,23 @@
 import { Router } from 'express';
 import passport from 'passport';
-import { register, login, getAccount, googleCallback } from '../controllers/user';
-import { registerValidator, loginValidator } from '../validators/user.validator';
+import {
+  register,
+  login,
+  getAccount,
+  oauthCallback,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+} from '../controllers/user';
+import { 
+  registerValidator, 
+  loginValidator,
+  userIdValidator,
+  updateUserValidator 
+} from '../validators/user.validator';
 import { parseValidationErrors } from '../validators/errors.parser';
-import { authenticateJwt } from '../controllers/middlewares';
+import { authenticateJwt, requireAdmin } from '../controllers/middlewares';
 
 const router = Router();
 
@@ -19,7 +33,8 @@ router.get(
 router.get(
   '/auth/google/callback',
   passport.authenticate('google', { session: false, failureRedirect: '/api/users/auth/google/failure' }),
-  googleCallback
+    oauthCallback,
+
 );
 
 router.get(
@@ -30,7 +45,13 @@ router.get(
 router.get(
   '/auth/facebook/callback',
   passport.authenticate('facebook', { session: false, failureRedirect: '/api/users/auth/facebook/failure' }),
-  googleCallback // reuse the same handler — it's provider-agnostic, just signs a token for req.user
+    oauthCallback,
+// reuse the same handler — it's provider-agnostic, just signs a token for req.user
 );
+
+router.get('/', authenticateJwt, requireAdmin, getAllUsers);
+router.get('/:id', authenticateJwt, requireAdmin, userIdValidator, parseValidationErrors, getUserById);
+router.patch('/:id', authenticateJwt, requireAdmin, updateUserValidator, parseValidationErrors, updateUser);
+router.delete('/:id', authenticateJwt, requireAdmin, userIdValidator, parseValidationErrors, deleteUser);
 
 export default router;

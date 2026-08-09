@@ -55,17 +55,6 @@ export const getAccount = (req: Request, res: Response): void => {
   res.status(200).json({ success: true, data: { user: user.toSafeObject() } });
 };
 
-export const googleCallback = (req: Request, res: Response): void => {
-  const user = req.user as IUserDocument;
-  const token = signToken(user);
-
-  // Redirect to your frontend with the token, or return JSON directly
-  // depending on how your frontend is built. JSON shown here for Postman testing:
-  res.status(200).json({
-    success: true,
-    data: { user: user.toSafeObject(), token },
-  });
-};
 
 export const oauthCallback = (req: Request, res: Response): void => {
   const user = req.user as IUserDocument;
@@ -75,4 +64,91 @@ export const oauthCallback = (req: Request, res: Response): void => {
     success: true,
     data: { user: user.toSafeObject(), token },
   });
+};
+
+export const getAllUsers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      success: true,
+      data: { users: users.map((u) => u.toSafeObject()) },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      throw new APIError('User not found', 404);
+    }
+
+    res.status(200).json({ success: true, data: { user: user.toSafeObject() } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      throw new APIError('User not found', 404);
+    }
+
+    const { name, email, role, password } = req.body;
+
+    if (name !== undefined) user.name = name;
+    if (email !== undefined) user.email = email;
+    if (role !== undefined) user.role = role;
+    if (password !== undefined) user.password = password; // pre('save') hook re-hashes automatically
+
+    await user.save();
+
+    res.status(200).json({ success: true, data: { user: user.toSafeObject() } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const requestingUser = req.user as IUserDocument;
+
+    if (requestingUser._id.toString() === req.params.id) {
+      throw new APIError('You cannot delete your own account via this endpoint', 400);
+    }
+
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      throw new APIError('User not found', 404);
+    }
+
+    await user.deleteOne();
+
+    res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (err) {
+    next(err);
+  }
 };
