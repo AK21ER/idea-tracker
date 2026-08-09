@@ -3,12 +3,11 @@ import { Schema } from 'mongoose';
 import { IUserDocument } from './types';
 
 export const applyUserMethods = (schema: Schema) => {
-  schema.pre('save', async function (this: IUserDocument, next: any) {
-    if (!this.isModified('password')) return next();
+  schema.pre('save', async function (this: IUserDocument) {
+    if (!this.isModified('password')) return;
 
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    next();
   });
 
   schema.methods.comparePassword = async function (
